@@ -7,5 +7,6 @@ Todo:
 
 Extras:
 - Writing a component calling legacy code (jquery)
-- Routing
 - HTTP Calls
+- Routing
+- Testing

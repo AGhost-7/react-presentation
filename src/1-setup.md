@@ -1,5 +1,5 @@
 
-# Getting a basic webpack setup going
+# Setting up a basic project
 
 ---
 
@@ -26,14 +26,15 @@ Here is the `webpack.config.js` configuration:
 ```js
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const mode = process.env.NODE_ENV || 'development';
 
 module.exports = {
 	entry: './lib/client/main.js',
-	mode: process.env.NODE_ENV || 'development',
+	mode,
+	devtool: mode === 'development' ? 'eval-source-map' : false,
 	output: {
 		path: path.resolve(__dirname, 'dist')
 	},
-
 	plugins: [
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
