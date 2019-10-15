@@ -53,7 +53,9 @@ const html = [
 ];
 ```
 
-After running for a little while however, you will start to see a leaking
+---
+
+After running for a little while however, you will start to see a memory leak
 problem...
 
 ---
@@ -64,7 +66,9 @@ The `useEffect` accepts the following parameters:
 - The first parameter is a function which will be called whenever the effect
 should be applied. The function can also optionally return a cleanup function
 which will be called on every unmount or re-render.
-- The second parameter is optional.
+- The second parameter is optional. It tells react to only run your effect if
+the value has changed since the last render.
+- Doesn't return anything.
 
 ---
 
@@ -88,3 +92,115 @@ function Counter() {
 ```
 
 ---
+
+### Another Example
+
+```js
+import { useState, useEffect } from 'react';
+
+function App() {
+	const [page, setPage] = useState(1);
+	const [posts, setPosts] = useState([]);
+
+	useEffect(() => {
+		fetch('https://jsonplaceholder.typicode.com/posts?_page=' + page)
+			.then(response => response.json())
+			.then(body => setPosts(body));
+	});
+
+	return [
+		<p>
+			<a onClick={() => setPage(page - 1)}>Previous</a>
+			-
+			<a onClick={() => setPage(page + 1)}>Next</a>
+		</p>,
+		<ul>
+			{posts.map(post => <li key={post.id}>{post.title}</li>)}
+		</ul>
+	];
+}
+
+const html = <App/>;
+```
+
+---
+
+All we need to do is specify the option parameter for `useEffect`. This will
+tell react to only run our effect when the value changes.
+
+```patch
+diff --git a/lib/client/main.js b/lib/client/main.js
+index 66efb8a..44ad91f 100644
+--- a/lib/client/main.js
++++ b/lib/client/main.js
+@@ -16,7 +16,7 @@ function App() {
+ 		fetch('https://jsonplaceholder.typicode.com/posts?_page=' + page)
+ 			.then(response => response.json())
+ 			.then(body => setPosts(body));
+-	});
++	}, [page]);
+ 
+ 	return [
+ 		<p>
+```
+
+---
+
+## Refs
+
+---
+
+Refs are identical to state with the exception that mutation does not trigger
+a re-render of the component.
+
+---
+
+Refs are useful for keeping track of things such as the underlying DOM element
+of a component.
+
+---
+
+The `useRef` function:
+- Accepts a default value.
+- Returns an object with a `current` property. `current` is the current value
+of the ref.
+
+---
+
+## Example
+
+---
+
+Lets say we want to write a simple canvas 2d component which renders a circle:
+
+```js
+function renderCanvas(canvas) {
+	const canvasContext = canvas.getContext('2d');
+	canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+	canvasContext.fillStyle = 'Tomato';
+	canvasContext.beginPath();
+	canvasContext.ellipse(100, 100, 50, 50, Math.PI * 2, 0, Math.PI * 2);
+	canvasContext.fill();
+}
+```
+
+---
+
+We can gain access to the underlying html element like so:
+```js
+import { useRef, useEffect } from 'react';
+
+function App() {
+	const canvasRef = useRef(null);
+
+	useEffect(() => {
+		renderCanvas(canvasRef.current);
+	});
+
+	return (
+		<canvas ref={canvasRef}></canvas>
+	);
+}
+
+const html = <App/>;
+```
