@@ -1,12 +1,20 @@
-Todo:
-- Setting up
-- JSX
-- Components
-- State
-- Context
 
-Extras:
-- Writing a component calling legacy code (jquery)
-- HTTP Calls
-- Routing
-- Testing
+# React Presentation
+
+## Usage
+
+Install dependencies:
+
+```bash
+yarn
+```
+
+Start up the server:
+```bash
+yarn serve
+```
+
+Open the browser:
+```bash
+yarn open
+```
