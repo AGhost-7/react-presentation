@@ -204,3 +204,103 @@ function App() {
 
 const html = <App/>;
 ```
+
+---
+
+## Another Example
+
+Lets integrate tui-editor with React.
+```bash
+yarn add -D tui-editor highlight.js codemirror style-loader css-loader file-loader
+```
+
+---
+
+To do this we will need to update our webpack configuration:
+```patch
+diff --git a/webpack.config.js b/webpack.config.js
+index 6657b39..b9b9c19 100644
+--- a/webpack.config.js
++++ b/webpack.config.js
+@@ -11,6 +11,14 @@ module.exports = {
+ 	devtool: mode === 'development' ? 'eval-source-map' : false,
+ 	module: {
+ 		rules: [
++			{
++				test: /\.png$/i,
++				loader: 'file-loader'
++			},
++			{
++				test: /\.css$/i,
++				use: ['style-loader', 'css-loader']
++			},
+ 			{
+ 				test: /.js$/,
+ 				exclude: /node_modules/,
+```
+
+---
+
+Next step is to implement a text editor component.
+```js
+import 'codemirror/lib/codemirror.css';
+import 'tui-editor/dist/tui-editor.css';
+import 'tui-editor/dist/tui-editor-contents.css';
+import 'highlight.js/styles/github.css';
+
+import Editor from 'tui-editor';
+import { useEffect, useRef } from 'react';
+
+function TuiEditor(props) {
+	const editorElement = useRef(null);
+	const editorInstance = useRef(null);
+
+	useEffect(() => {
+		if (!editorInstance.current) {
+			editorInstance.current = new Editor({
+				el: editorElement.current,
+				initialEditType: 'markdown',
+				usageStatistics: false,
+			});
+		}
+
+		editorInstance.current.setValue(props.value);
+
+		editorInstance.current.on('change', props.onChange);
+		return () => editorInstance.current.off('change', props.onChange);
+	}, [props.value, props.onChange]);
+
+	return <div ref={editorElement}></div>;
+}
+```
+
+---
+
+And then putting it together.
+```js
+import { useState } from 'react';
+function App() {
+	const [subject, setSubject] = useState(null);
+	const [body, setBody] = useState(null);
+
+	const onSubjectChanged = (event) => {
+		setSubject(event.target.value);
+	};
+	const onBodyChanged = (editor) => {
+		setBody(editor.getValue());
+	};
+	const onShow = () => {
+		alert(`Subject: ${subject}\nBody: ${body}`)
+	};
+	return [
+		<div>
+			<label htmlFor='subject'>Subject</label>
+			<input type='text' name='subject' onChange={onSubjectChanged}/>
+		</div>,
+		<TuiEditor value={body} onChange={onBodyChanged}/>,
+		<button onClick={onShow}>show</button>
+	];
+}
+
+const html = <App/>;
+```
