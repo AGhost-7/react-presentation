@@ -133,5 +133,3 @@ ReactDom.render(
 	root
 );
 ```
-
----
