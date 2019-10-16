@@ -15,7 +15,8 @@ The `useState` function:
 - Accepts a starting value.
 - Returns an array containing two items:
 	- The first item is the current value of your state.
-	- The second item is a function which you can call to update your state.
+	- The second item is a function which you can call to update your state. When
+	you call this function, it will cause your component to re-render.
 
 ---
 

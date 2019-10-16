@@ -265,9 +265,9 @@ function TuiEditor(props) {
 		}
 
 		editorInstance.current.setValue(props.value);
-
-		editorInstance.current.on('change', props.onChange);
-		return () => editorInstance.current.off('change', props.onChange);
+		const onChange = () => props.onChange && props.onChange(editor);
+		editorInstance.current.on('change', onChange);
+		return () => editorInstance.current.off('change', onChange);
 	}, [props.value, props.onChange]);
 
 	return <div ref={editorElement}></div>;
@@ -304,3 +304,7 @@ function App() {
 
 const html = <App/>;
 ```
+
+---
+
+## Questions?
